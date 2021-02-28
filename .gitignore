@@ -65,3 +65,5 @@ Dockerfile.default
 .nyc_output/
 jsconfig.json
 build/
+db/
+docker-compose.yml
