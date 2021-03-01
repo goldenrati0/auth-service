@@ -1,13 +1,14 @@
 import PermissionModel from '../../models/permission.schema';
 import { IPermission } from '../../models/interfaces/persmission.interface';
-import PermissionDTO from '../dto/permission';
+import PermissionDTO, { PermissionCreate } from '../dto/permission';
 
-const toDomain = ({ name }: any): IPermission =>
+const toDomain = ({ name }: PermissionCreate): IPermission =>
   new PermissionModel({
     name,
   });
 
-const toDTO = ({ name }: IPermission): PermissionDTO => ({
+const toDTO = ({ _id: id, name }: IPermission): PermissionDTO => ({
+  id,
   name,
 });
 
