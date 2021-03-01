@@ -1,5 +1,11 @@
 import { Request, Response } from 'express';
-import { login, create, getUserRoles, addRolesToUser, checkUserPermissions } from '../repository/user';
+import {
+  addRolesToUser,
+  checkUserPermissions,
+  create,
+  getUserRoles,
+  login,
+} from '../repository/user';
 import { signAccessTokenForUser } from './jwtUtilities/jwt';
 import { assertPayloadAgainstSchema } from './middlewares/payloadValidator';
 import { userIdInPathParamSchema } from './schemas/request.schema';
@@ -19,6 +25,8 @@ export const userSignupController = async (req: Request, res: Response) => {
 export const userLoginController = async (req: Request, res: Response) => {
   const { email, username, password } = req.body;
 
+  // TODO: Could be a simpler interface, with identifier and password
+  // TODO: Based on the identifier, controller should decide which login method to use
   const user = await login(email, username, password);
   const token = signAccessTokenForUser(user);
 
@@ -55,5 +63,5 @@ module.exports = {
   userLoginController,
   listUserRoles,
   addRoles,
-  checkPermissions
+  checkPermissions,
 };

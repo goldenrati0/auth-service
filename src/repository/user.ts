@@ -55,6 +55,7 @@ export const addRolesToUser = async ({ userId, roles }: AddRolesToUserType): Pro
   }
   const roleIds = existingRoles.map(role => role._id);
 
+  // TODO: Optimize this query
   await UserModel.findOneAndUpdate(
     { _id: userId },
     { $addToSet: { roles: { $each: roleIds } } }
@@ -67,6 +68,7 @@ export const addRolesToUser = async ({ userId, roles }: AddRolesToUserType): Pro
   return UserMapper.toDTO(populatedUser);
 };
 
+// TODO: Does too much work, should break down to multiple separate functions
 export const checkUserPermissions = async ({
   userId,
   permissions,
@@ -75,6 +77,7 @@ export const checkUserPermissions = async ({
   const populatedUser = await populateUser(user);
 
   const userPermissionIdsSet = new Set<string>();
+  // TODO: should delegate this reponsibilty to database
   populatedUser.roles.map(role => {
     role.permissions.map(permission => {
       userPermissionIdsSet.add(permission.id);

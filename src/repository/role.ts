@@ -34,13 +34,15 @@ export const getAll = async (): Promise<RoleDTO[]> => {
 
 export const getAllMatchingId = async (
   ids: string[],
-  shouldConvertToDTO: boolean = true
+  shouldConvertToDTO: boolean = true // TODO: this is a hack, shoudl introduce a better approach
 ): Promise<RoleDTO[] | IRole[]> => {
   const roles = await RoleModel.find({ _id: { $in: ids } }).exec();
   const populatedRoles = await Promise.all(roles.map(populateRole));
+
   if (shouldConvertToDTO) {
     return populatedRoles.map(RoleMapper.toDTO);
   }
+
   return populatedRoles;
 };
 
