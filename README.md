@@ -27,4 +27,22 @@ We are allowing a few endpoints to perform actions
 * `POST /api/permissions` - Create a new permission
 
 ### **How to run locally**
-PLACEHOLDER
+#### **Docker**
+You need to have Docker and `docker-compose` installed to run this project locally.
+
+**Clone Repository**
+```bash
+git clone git@github.com:tahmid-choyon/auth-service.git
+```
+**Navigate to project directory**
+```bash
+cd auth-service/
+```
+**Start project with docker-compose**
+```bash
+docker-compose up
+```
+
+After the containers have started successfully, you will be able to access the server browsing
+
+`http://127.0.0.1:3000/`
