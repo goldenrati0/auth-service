@@ -66,4 +66,3 @@ Dockerfile.default
 jsconfig.json
 build/
 db/
-docker-compose.yml

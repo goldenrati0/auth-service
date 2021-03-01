@@ -1,0 +1,39 @@
+version: '3.1'
+
+services:
+  auth-service:
+    image: auth-service
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    environment:
+      MONGO_URI: mongodb://root:toor@mongo:27017/auth_service?authSource=admin
+      APP_HOST: 0.0.0.0
+      APP_PORT: 3000
+      JWT_SECRET: 7UddfJ7gyp3U6ZHaDJaRDqwQVUWrX2nZ7z6S6zCkua2eCYgkgR9
+    ports:
+      - 3000:3000
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    networks:
+      - auth-service-network
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:4.4.4-bionic
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: toor
+      MONGO_INITDB_DATABASE: auth_service
+    ports:
+      - 27017:27017
+    volumes:
+      - ./db:/data/db
+    networks:
+      - auth-service-network
+
+networks:
+  auth-service-network:
+    driver: bridge
