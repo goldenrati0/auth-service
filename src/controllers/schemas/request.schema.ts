@@ -1,14 +1,15 @@
 import Joi from 'joi';
 
+const objectIdSchema = Joi.string().pattern(new RegExp('^[0-9a-fA-F]{24}$'));
 const emailSchema = Joi.string().email({ minDomainSegments: 2 }).lowercase();
 const usernameSchema = Joi.string().min(5).max(30).alphanum().lowercase();
-const passwordSchema = Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{8,80}$')).required();
-const permissionSchema = Joi.array().items(Joi.string().required()).required();
+const passwordSchema = Joi.string().min(8).pattern(new RegExp('^[a-zA-Z0-9]{8,80}$'));
+const permissionSchema = Joi.string();
 
 export const userSignupSchema = Joi.object({
   username: usernameSchema.required(),
   email: emailSchema.required(),
-  password: passwordSchema,
+  password: passwordSchema.required(),
 });
 
 export const userLoginSchema = Joi.object({
@@ -17,21 +18,25 @@ export const userLoginSchema = Joi.object({
   password: passwordSchema,
 }).xor('username', 'email'); // username and email cannot coexist in the payload
 
-export const createRoleSchema = Joi.object({
-  name: Joi.string().min(3).required(),
-  permissions: Joi.array().items(Joi.string().required()).required(),
+export const userIdInPathParamSchema = Joi.object({
+  userId: objectIdSchema,
 });
 
 export const addRolesToUserSchema = Joi.object({
-  roles: Joi.array().items(Joi.string()).required(),
+  roles: Joi.array().items(objectIdSchema.required()).required(),
+});
+
+export const createRoleSchema = Joi.object({
+  name: Joi.string().min(3).required(),
+  permissions: Joi.array().items(objectIdSchema.required()).required(),
 });
 
 export const createPermissionSchema = Joi.object({
-  name: permissionSchema,
+  name: permissionSchema.required(),
 });
 
-export const checkPersmissionsSchema = Joi.object({
-  persmissions: permissionSchema,
+export const checkUserPersmissionsSchema = Joi.object({
+  permissions: Joi.array().items(permissionSchema.required()).required(),
 });
 
 module.exports = {
@@ -40,5 +45,6 @@ module.exports = {
   createRoleSchema,
   addRolesToUserSchema,
   createPermissionSchema,
-  checkPersmissionsSchema,
+  checkUserPersmissionsSchema,
+  userIdInPathParamSchema,
 };
