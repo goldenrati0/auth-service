@@ -1,14 +1,20 @@
 import bcrypt from 'bcrypt';
 import createError from 'http-errors';
+import { IRole } from '../models/interfaces/role.interface';
 import { IUser } from '../models/interfaces/user.interface';
 import UserModel from '../models/user.schema';
+import RoleRepository from '../repository/role';
 import RoleDTO from './dto/role';
 import UserDTO, {
+  AddRolesToUserType,
   UserLoginWithEmailType,
   UserLoginWithUsernameType,
   UserSignupType,
+  UserPermissionCheckType,
+  UserPermissionCheckResponseType,
 } from './dto/user';
 import UserMapper from './mappers/user';
+import _ from 'lodash';
 
 export const validateUserObject = (user: IUser | null): IUser => {
   if (user === null) {
@@ -42,13 +48,60 @@ export const getByUsername = async (username: string): Promise<IUser | null> =>
 export const validateAndGetByUsername = async (username: string): Promise<IUser> =>
   validateUserObject(await getByUsername(username));
 
-export const getUserRoles = async (userId: string): Promise<RoleDTO[]> => {
-  const user = await getById(userId);
+export const addRolesToUser = async ({ userId, roles }: AddRolesToUserType): Promise<UserDTO> => {
+  const existingRoles = (await RoleRepository.getAllMatchingId(roles, false)) as IRole[];
+  if (existingRoles.length !== roles.length) {
+    throw new createError.NotFound(`One or multiple roles were not found`);
+  }
+  const roleIds = existingRoles.map(role => role._id);
 
-  return UserMapper.toDTO(user).roles;
+  await UserModel.findOneAndUpdate(
+    { _id: userId },
+    { $addToSet: { roles: { $each: roleIds } } }
+  ).exec();
+
+  const user = await getById(userId);
+  await user.save();
+  const populatedUser = await populateUser(user);
+
+  return UserMapper.toDTO(populatedUser);
 };
 
-export const signup = async ({ username, email, password }: UserSignupType): Promise<UserDTO> => {
+export const checkUserPermissions = async ({
+  userId,
+  permissions,
+}: UserPermissionCheckType): Promise<UserPermissionCheckResponseType> => {
+  const user = await getById(userId);
+  const populatedUser = await populateUser(user);
+
+  const userPermissionIdsSet = new Set<string>();
+  populatedUser.roles.map(role => {
+    role.permissions.map(permission => {
+      userPermissionIdsSet.add(permission.id);
+    });
+  });
+
+  const allowedPermissions: { id: string; allowed: Boolean }[] = permissions.map(permission => {
+    const allowed = userPermissionIdsSet.has(permission);
+    return {
+      id: permission,
+      allowed,
+    };
+  });
+
+  return {
+    permissions: allowedPermissions,
+  };
+};
+
+export const getUserRoles = async (userId: string): Promise<RoleDTO[]> => {
+  const user = await getById(userId);
+  const populatedUser = await populateUser(user);
+
+  return UserMapper.toDTO(populatedUser).roles;
+};
+
+export const create = async ({ username, email, password }: UserSignupType): Promise<UserDTO> => {
   const existingUserWithSameEmail = await getByEmail(email);
   const existingUserWithSameUsername = await getByUsername(username);
 
@@ -63,7 +116,6 @@ export const signup = async ({ username, email, password }: UserSignupType): Pro
     username,
     email,
     password: hashedPassword,
-    roles: [],
   });
   await newUser.save();
 
@@ -134,6 +186,9 @@ module.exports = {
   getById,
   getByEmail,
   getByUsername,
-  signup,
+  create,
   login,
+  getUserRoles,
+  addRolesToUser,
+  checkUserPermissions,
 };
