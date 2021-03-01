@@ -46,3 +46,8 @@ docker-compose up
 After the containers have started successfully, you will be able to access the server browsing
 
 `http://127.0.0.1:3000/`
+
+### **Documentation**
+[API Documentation](https://github.com/tahmid-choyon/auth-service/blob/main/assets/auth-service-doc.pdf)
+
+If anything goes wrong, download from [here](https://github.com/tahmid-choyon/auth-service/blob/main/assets/auth-service-doc.pdf?raw=true)
