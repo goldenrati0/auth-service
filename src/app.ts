@@ -1,22 +1,22 @@
 import express, { NextFunction, Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import { validateParams } from './controllers/middlewares/payloadValidator';
-import { listPermissions, createPermission } from './controllers/permission';
-import { listRoles, createRole } from './controllers/role';
+import { createPermission, listPermissions } from './controllers/permission';
+import { createRole, listRoles } from './controllers/role';
 import {
-  createPermissionSchema,
-  userLoginSchema,
-  userSignupSchema,
-  createRoleSchema,
   addRolesToUserSchema,
   checkUserPersmissionsSchema,
+  createPermissionSchema,
+  createRoleSchema,
+  userLoginSchema,
+  userSignupSchema,
 } from './controllers/schemas/request.schema';
 import {
-  userLoginController,
-  userSignupController,
-  listUserRoles,
   addRoles,
   checkPermissions,
+  listUserRoles,
+  userLoginController,
+  userSignupController,
 } from './controllers/user';
 
 const app = express();
