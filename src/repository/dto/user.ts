@@ -16,24 +16,25 @@ export type UserLoginWithUsernameType = {
   password: string;
 };
 
-export type UserRolesType = {
+export type AddRolesToUserType = {
+  userId: string;
   roles: string[];
 };
 
 export type UserPermissionCheckType = {
+  userId: string;
   permissions: string[];
 };
 
 export type UserPermissionCheckResponseType = {
-  permissions: [
-    {
-      allowed: Boolean;
-    }
-  ];
+  permissions: {
+    id: string;
+    allowed: Boolean;
+  }[];
 };
 
 export default interface UserDTO {
-  id: string,
+  id: string;
   username: string;
   roles: RoleDTO[];
-};
+}
