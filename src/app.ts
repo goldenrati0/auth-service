@@ -1,8 +1,23 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import { validateParams } from './controllers/middlewares/payloadValidator';
-import { userLoginSchema, userSignupSchema } from './controllers/schemas/request.schema';
-import { userLoginController, userSignupController } from './controllers/user';
+import { listPermissions, createPermission } from './controllers/permission';
+import { listRoles, createRole } from './controllers/role';
+import {
+  createPermissionSchema,
+  userLoginSchema,
+  userSignupSchema,
+  createRoleSchema,
+  addRolesToUserSchema,
+  checkUserPersmissionsSchema,
+} from './controllers/schemas/request.schema';
+import {
+  userLoginController,
+  userSignupController,
+  listUserRoles,
+  addRoles,
+  checkPermissions,
+} from './controllers/user';
 
 const app = express();
 app.use(express.json());
@@ -10,7 +25,26 @@ app.use(express.json());
 app.post('/api/signup', validateParams(userSignupSchema), asyncHandler(userSignupController));
 app.post('/api/login', validateParams(userLoginSchema), asyncHandler(userLoginController));
 
-app.use((err: any, req: any, res: any, next: any) => {
+app.get('/api/permissions', asyncHandler(listPermissions));
+app.post(
+  '/api/permissions',
+  validateParams(createPermissionSchema),
+  asyncHandler(createPermission)
+);
+
+app.get('/api/roles', asyncHandler(listRoles));
+app.post('/api/roles', validateParams(createRoleSchema), asyncHandler(createRole));
+
+app.get('/api/users/:userId/roles', asyncHandler(listUserRoles));
+app.post('/api/users/:userId/roles', validateParams(addRolesToUserSchema), asyncHandler(addRoles));
+app.post(
+  '/api/users/:userId/permissions',
+  validateParams(checkUserPersmissionsSchema),
+  asyncHandler(checkPermissions)
+);
+
+// express error handlers
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   if (err.status >= 500) next(err);
 
   console.error(err.stack);
@@ -19,7 +53,7 @@ app.use((err: any, req: any, res: any, next: any) => {
   });
 });
 
-app.use((err: any, req: any, res: any, next: any) => {
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
   res.status(err.status ?? 500).json({
     error: 'Internal server error.',
