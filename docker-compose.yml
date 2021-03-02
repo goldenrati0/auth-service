@@ -29,8 +29,6 @@ services:
       MONGO_INITDB_DATABASE: auth_service
     ports:
       - 27017:27017
-    volumes:
-      - ./db:/data/db
     networks:
       - auth-service-network
 
