@@ -32,7 +32,7 @@ You need to have Docker and `docker-compose` installed to run this project local
 
 **Clone Repository**
 ```bash
-git clone git@github.com:tahmid-choyon/auth-service.git
+git clone git@github.com:goldenrati0/auth-service.git
 ```
 **Navigate to project directory**
 ```bash
@@ -48,6 +48,6 @@ After the containers have started successfully, you will be able to access the s
 `http://127.0.0.1:3000/`
 
 ### **Documentation**
-[API Documentation](https://github.com/tahmid-choyon/auth-service/blob/main/assets/auth-service-doc.pdf)
+[API Documentation](https://github.com/goldenrati0/auth-service/blob/main/assets/auth-service-doc.pdf)
 
-If anything goes wrong, download from [here](https://github.com/tahmid-choyon/auth-service/blob/main/assets/auth-service-doc.pdf?raw=true)
+If anything goes wrong, download from [here](https://github.com/goldenrati0/auth-service/blob/main/assets/auth-service-doc.pdf?raw=true)
